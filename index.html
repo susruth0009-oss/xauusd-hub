@@ -3,78 +3,170 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XAUUSD Hub - Gold Trading Terminal</title>
+  <title>XAUUSD Hub — Real-Time Gold Terminal</title>
   <style>
+    :root {
+      --bg-dark: #0a0d12;
+      --bg-card: #121721;
+      --bg-active: #1e2638;
+      --gold: #f3ba2f;
+      --gold-glow: rgba(243, 186, 47, 0.2);
+      --green: #0ecb81;
+      --red: #f6465d;
+      --text: #f0f4f8;
+      --text-sub: #848e9c;
+      --border: #232a3b;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background-color: #121418; color: #ffffff; font-family: Arial, sans-serif; height: 100vh; display: flex; flex-direction: column; }
-    header { background-color: #1a1d24; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a2e39; }
-    header h1 { font-size: 1.2rem; color: #f0b90b; }
-    .badge { background-color: #f0b90b; color: #000; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-    .main-container { display: flex; flex: 1; flex-direction: row; overflow: hidden; }
-    .chart-section { flex: 3; height: 100%; border-right: 1px solid #2a2e39; }
-    .sidebar { flex: 1; min-width: 300px; height: 100%; background-color: #161920; overflow-y: auto; }
-    @media (max-width: 768px) {
-      .main-container { flex-direction: column; }
-      .chart-section { height: 60vh; border-right: none; border-bottom: 1px solid #2a2e39; }
-      .sidebar { height: 40vh; width: 100%; }
+    body { background-color: var(--bg-dark); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header Bar */
+    header { background: var(--bg-card); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; }
+    .brand span { color: var(--gold); }
+    .live-dot { width: 8px; height: 8px; background-color: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: pulse 1.5s infinite; }
+
+    @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+    /* Catchy Flash News Marquee Banner */
+    .news-banner { background: #000000; border-bottom: 1px solid var(--border); height: 38px; display: flex; align-items: center; overflow: hidden; }
+    .news-tag { background: var(--gold); color: #000; font-size: 0.7rem; font-weight: 800; padding: 0 10px; height: 100%; display: flex; align-items: center; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Quick Timeframe Switcher */
+    .timeframe-bar { background: var(--bg-card); padding: 6px 12px; display: flex; gap: 8px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .tf-btn { background: var(--bg-dark); color: var(--text-sub); border: 1px solid var(--border); padding: 5px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: none; }
+    .tf-btn.active, .tf-btn:hover { background: var(--gold-glow); color: var(--gold); border-color: var(--gold); }
+
+    /* Layout Workspace */
+    .workspace { display: flex; flex: 1; flex-direction: row; }
+    .main-chart { flex: 3; min-height: 500px; border-right: 1px solid var(--border); }
+    .side-news { flex: 1; min-width: 310px; background: var(--bg-card); min-height: 400px; }
+
+    /* Catchy Broker Affiliate Cards Below Terminal */
+    .broker-section { background: var(--bg-card); padding: 16px; border-top: 1px solid var(--border); }
+    .broker-title { font-size: 0.85rem; font-weight: 700; color: var(--gold); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .broker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .broker-card { background: var(--bg-dark); border: 1px solid var(--border); padding: 12px 16px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .broker-info h4 { font-size: 0.9rem; color: #fff; }
+    .broker-info p { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
+    .trade-btn { background: var(--gold); color: #000; font-weight: 700; font-size: 0.75rem; padding: 8px 14px; border-radius: 4px; text-decoration: none; text-transform: uppercase; }
+
+    @media (max-width: 850px) {
+      .workspace { flex-direction: column; }
+      .main-chart { min-height: 420px; border-right: none; }
+      .side-news { min-height: 350px; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>⚡ XAUUSD Hub Terminal</h1>
-    <span class="badge">PRO GOLD FEED</span>
+    <div class="brand">
+      <div class="live-dot"></div>
+      XAUUSD<span>HUB</span>
+    </div>
+    <div style="font-size:0.75rem; color: var(--gold); font-weight:bold;">INSTITUTIONAL FEED</div>
   </header>
 
-  <div class="main-container">
-    <!-- TradingView Advanced Gold Chart Section -->
-    <div class="chart-section">
+  <!-- Catchy Flash News Marquee Bar -->
+  <div class="news-banner">
+    <div class="news-tag">⚡ FLASH NEWS</div>
+    <div style="width:100%; height:100%;">
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+        {
+          "symbols": [
+            { "description": "GOLD SPOT", "proName": "OANDA:XAUUSD" },
+            { "description": "US DOLLAR INDEX", "proName": "CAPITALCOM:DXY" },
+            { "description": "US 10Y YIELD", "proName": "TVC:US10Y" }
+          ],
+          "showSymbolLogo": false,
+          "colorTheme": "dark",
+          "isTransparent": true,
+          "displayMode": "adaptive",
+          "locale": "en"
+        }
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Timeframe Selection Bar -->
+  <div class="timeframe-bar">
+    <span class="tf-btn active">SCALP (M5)</span>
+    <span class="tf-btn">M15</span>
+    <span class="tf-btn">H1</span>
+    <span class="tf-btn">H4</span>
+    <span class="tf-btn">DAILY</span>
+  </div>
+
+  <!-- Main Chart & Real-Time News Feed -->
+  <div class="workspace">
+    <div class="main-chart">
       <div class="tradingview-widget-container" style="height:100%;width:100%">
-        <div id="tradingview_xauusd" style="height:calc(100% - 32px);width:100%"></div>
+        <div id="tradingview_xau" style="height:100%;width:100%"></div>
         <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
         <script type="text/javascript">
           new TradingView.widget({
             "autosize": true,
             "symbol": "OANDA:XAUUSD",
-            "interval": "15",
+            "interval": "5",
             "timezone": "Etc/UTC",
             "theme": "dark",
             "style": "1",
             "locale": "en",
-            "toolbar_bg": "#f1f3f6",
+            "toolbar_bg": "#121721",
             "enable_publishing": false,
-            "withrequester": false,
-            "hide_side_toolbar": false,
             "allow_symbol_change": true,
             "details": true,
-            "hotlist": true,
-            "calendar": true,
             "studies": [
               "STD;RSI",
               "STD;MA%Ribbon"
             ],
-            "container_id": "tradingview_xauusd"
+            "container_id": "tradingview_xau"
           });
         </script>
       </div>
     </div>
 
-    <!-- Live Macro Economic Calendar & News Sidebar -->
-    <div class="sidebar">
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+    <!-- Live Catchy News Feed -->
+    <div class="side-news">
+      <div class="tradingview-widget-container" style="height:100%;width:100%">
+        <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
         {
+          "feedMode": "symbol",
+          "symbol": "OANDA:XAUUSD",
           "colorTheme": "dark",
-          "isTransparent": false,
+          "isTransparent": true,
+          "displayMode": "regular",
           "width": "100%",
           "height": "100%",
-          "locale": "en",
-          "importanceFilter": "-1,0,1",
-          "currencyFilter": "USD"
+          "locale": "en"
         }
         </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- High-Converting Broker Slots (Monetization) -->
+  <div class="broker-section">
+    <div class="broker-title">🔥 Top Low-Spread Gold Brokers</div>
+    <div class="broker-grid">
+      <div class="broker-card">
+        <div class="broker-info">
+          <h4>Exness Pro</h4>
+          <p>Spread: 0.0 Pips | Leverage: 1:Unlimited</p>
+        </div>
+        <a href="#" class="trade-btn">Trade Gold</a>
+      </div>
+      <div class="broker-card">
+        <div class="broker-info">
+          <h4>Pepperstone ECN</h4>
+          <p>Execution: Sub-30ms | Swap-Free</p>
+        </div>
+        <a href="#" class="trade-btn">Trade Gold</a>
       </div>
     </div>
   </div>
